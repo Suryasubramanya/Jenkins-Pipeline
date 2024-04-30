@@ -1,69 +1,77 @@
 pipeline {
     agent any
 
+    environment {
+        // Define environment variables
+        STAGING_SERVER = 'staging.example.com'
+        PRODUCTION_SERVER = 'production.example.com'
+        SONAR_HOST_URL = 'http://sonar.example.com'
+        SONAR_LOGIN = 'your_sonar_login_token'
+    }
+
+    tools {
+        // Make sure Maven and JDK are installed and configured in Jenkins Global Tool Configuration
+        maven 'Maven3'
+        jdk 'JDK8'
+    }
+
     stages {
+        stage('Checkout Code') {
+            steps {
+                // Checks out the source code from the repository
+                checkout scm
+            }
+        }
         stage('Build') {
             steps {
-                //Maven to build the code
+                echo 'Building the project...'
                 sh 'mvn clean package'
             }
         }
-
         stage('Unit and Integration Tests') {
             steps {
-                // Run unit tests using JUnit
+                echo 'Running unit and integration tests...'
                 sh 'mvn test'
-
-                // Run integration tests using Selenium
-                sh 'mvn verify'
             }
         }
-
         stage('Code Analysis') {
             steps {
-                // Analyze the code using SonarQube
-                sh 'mvn sonar:sonar'
+                echo 'Analyzing code with SonarQube...'
+                sh "mvn sonar:sonar -Dsonar.projectKey=YourProjectKey -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_LOGIN}"
             }
         }
-
         stage('Security Scan') {
             steps {
-                // Perform a security scan using OWASP ZAP
-                sh 'zap-cli quick-scan --url http://124.148.225.143/github-webhook/'
+                echo 'Performing security scan with OWASP ZAP...'
+                sh 'zap-baseline.py -t http://your-staging-url'
             }
         }
-
         stage('Deploy to Staging') {
             steps {
-                // Deploy the application to a staging server using Docker
-                sh 'docker build -t your-app:staging .'
-                sh 'docker run -d -p 8080:8080 my-app:staging'
+                echo 'Deploying to staging server...'
+                sh 'scp target/myapp.war ${STAGING_SERVER}:/var/www/html/'
             }
         }
-
         stage('Integration Tests on Staging') {
             steps {
-                // Run integration tests on the staging environment using Selenium
-                sh 'mvn verify -Denvironment=staging'
+                echo 'Running integration tests on staging...'
+                sh 'ssh ${STAGING_SERVER} "cd /var/www/html/ && java -jar myapp.war"'
             }
         }
-
         stage('Deploy to Production') {
             steps {
-                // Deploy the application to a production server using Docker
-                sh 'docker build -t your-app:latest .'
-                sh 'docker run -d -p 80:8080 your-app:latest'
+                echo 'Deploying to production server...'
+                sh 'scp target/myapp.war ${PRODUCTION_SERVER}:/var/www/html/'
             }
         }
     }
 
     post {
         always {
-            // Send notification emails
-            emailext subject: 'Jenkins Pipeline Report',
-                      body: 'See the attached build log for details.',
-                      attachLog: true,
-                      to: 's223113345@deakin.edu.au'
+            echo 'Sending email notifications...'
+            mail to: 's223113345@deakin.edu.au',
+                 subject: "Build ${currentBuild.fullDisplayName} finished",
+                 body: "Build status: ${currentBuild.result}. Check console output at ${env.BUILD_URL}"
         }
     }
 }
