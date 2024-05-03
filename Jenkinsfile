@@ -49,16 +49,16 @@ pipeline {
         success {
             echo "Pipeline execution succeeded!"
             emailext(
-                to: "nssuryasubramanya@gmail.com",
+                to: "s223113345@deakin.edu.au",
                 subject: "Pipeline Status: Success",
                 body: "The Jenkins pipeline has successfully completed all tasks.",
                 attachLog: true
             )
         }
         failure {
-            echo "nssuryasubramanya@gmail.com"
+            echo "s223113345@deakin.edu.au"
             emailext(
-                to: "nssuryasubramanya@gmail.com",
+                to: "s223113345@deakin.edu.au",
                 subject: "Pipeline Status: Failure",
                 body: "The Jenkins pipeline has encountered issues and failed. Please review the logs for details.",
                 attachLog: true
