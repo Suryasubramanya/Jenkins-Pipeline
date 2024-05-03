@@ -4,13 +4,13 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo "Step 1: Building the application using Gradle"
+                echo "Step 1: Building application by Gradle"
             }
         }
         
         stage('Unit and Integration Tests') {
             steps {
-                echo "Step 2: Running unit and integration tests with JUnit and TestNG"
+                echo "Step 2: Run unit and integrate tests with Unit and Testing"
             }
         }
 
@@ -49,16 +49,16 @@ pipeline {
         success {
             echo "Pipeline execution succeeded!"
             emailext(
-                to: "suryasubu007@gmail.com",
+                to: "s223113345@deakin.edu.au",
                 subject: "Pipeline Status: Success",
                 body: "The Jenkins pipeline has successfully completed all tasks.",
                 attachLog: true
             )
         }
         failure {
-            echo "suryasubu007@gmail.com"
+            echo "s223113345@deakin.edu.au"
             emailext(
-                to: "suryasubu007@gmail.com",
+                to: "s223113345@deakin.edu.au",
                 subject: "Pipeline Status: Failure",
                 body: "The Jenkins pipeline has encountered issues and failed. Please review the logs for details.",
                 attachLog: true
