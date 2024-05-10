@@ -1,68 +1,115 @@
 pipeline {
     agent any
 
+    environment {
+        TESTING_ENVIRONMENT = "testing_environment"
+        PRODUCTION_ENVIRONMENT = "Subramanya N S"
+    }
+
     stages {
         stage('Build') {
             steps {
-                echo "Step 1: Building application by Gradle"
+                echo 'Building the code with Maven'
+            }
+             post {
+                success {
+                    sendEmail('Build Successful')
+                }
+                failure {
+                    sendEmail('Build Failed')
+                }
             }
         }
-        
+
         stage('Unit and Integration Tests') {
             steps {
-                echo "Step 2: Run unit and integrate tests with Unit and Testing"
+                echo 'Running unit tests with JUnit'
+                echo 'Running integration tests with Selenium'
+            }
+             post {
+                success {
+                    sendEmail('Build Successful')
+                }
+                failure {
+                    sendEmail('Build Failed')
+                }
             }
         }
 
         stage('Code Analysis') {
             steps {
-                echo "Step 3: Analyzing the code using a static code analysis tool"
+                echo 'Performing code analysis with Jenkins Plugins'
+            }
+             post {
+                success {
+                    sendEmail('Build Successful')
+                }
+                failure {
+                    sendEmail('Build Failed')
+                }
             }
         }
 
         stage('Security Scan') {
             steps {
-                echo "Step 4: Performing a security scan using OWASP ZAP"
+                echo 'Performing security scan with SonarQube'
+            }
+             post {
+                success {
+                    sendEmail('Build Successful')
+                }
+                failure {
+                    sendEmail('Build Failed')
+                }
             }
         }
 
         stage('Deploy to Staging') {
             steps {
-                echo "Step 5: Deploying the application to a staging server on AWS"
+                echo 'Deploying to staging server (e.g., AWS EC2 instance)'
+            }
+             post {
+                success {
+                    sendEmail('Build Successful')
+                }
+                failure {
+                    sendEmail('Build Failed')
+                }
             }
         }
 
         stage('Integration Tests on Staging') {
             steps {
-                echo "Step 6: Executing integration tests on the staging environment"
+                echo 'Running integration tests on staging environment'
+            }
+             post {
+                success {
+                    sendEmail('Build Successful')
+                }
+                failure {
+                    sendEmail('Build Failed')
+                }
             }
         }
 
         stage('Deploy to Production') {
             steps {
-                echo "Step 7: Deploying the application to a production server on Azure"
+                echo 'Deploying to production server (e.g., AWS EC2 instance)'
+            }
+             post {
+                success {
+                    sendEmail('Build Successful')
+                }
+                failure {
+                    sendEmail('Build Failed')
+                }
             }
         }
     }
+}
 
-    post {
-        success {
-            echo "Pipeline execution succeeded!"
-            emailext(
-                to: "suryasubu007@gmail.com",
-                subject: "Pipeline Status: Success",
-                body: "The Jenkins pipeline has successfully completed all tasks.",
-                attachLog: true
-            )
-        }
-        failure {
-            echo "suryasubu007@gmail.com"
-            emailext(
-                to: "suryasubu007@gmail.com",
-                subject: "Pipeline Status: Failure",
-                body: "The Jenkins pipeline has encountered issues and failed. Please review the logs for details.",
-                attachLog: true
-            )
-        }
-    }
+    def sendEmail(String status) {
+    mail body: "Pipeline Stage: ${env.STAGE_NAME}\nStatus: ${status}",
+             subject: "Pipeline Stage: ${env.STAGE_NAME} - ${status}",
+             to: "nssuryasubramanya@gmail.com"
 }
