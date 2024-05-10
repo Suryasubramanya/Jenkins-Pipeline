@@ -1,115 +1,115 @@
 pipeline {
-    agent any
+  agent any
 
-    environment {
-        TESTING_ENVIRONMENT = "testing_environment"
-        PRODUCTION_ENVIRONMENT = "Subramanya N S"
+  environment {
+    TESTING_ENVIRONMENT = "testing_environment"
+    PRODUCTION_ENVIRONMENT = "Subramanya N S"
+  }
+
+  stages {
+    stage('Build') {
+      steps {
+        script {
+          echo 'Building code using Maven'
+          sendEmail('Build Successful')
+        }
+      }
+      post {
+        failure {
+          sendEmail('Build Fail')
+        }
+      }
     }
 
-    stages {
-        stage('Build') {
-            steps {
-                echo 'Building the code with Maven'
-            }
-             post {
-                success {
-                    sendEmail('Build Successful')
-                }
-                failure {
-                    sendEmail('Build Failed')
-                }
-            }
+    stage('Unit, and Integration Tests') {
+      steps {
+        script {
+          echo 'Using JUnit to execute unit tests'
+          echo 'Using Selenium to conduct integration testing'
+          sendEmail('Build Successful')
         }
-
-        stage('Unit and Integration Tests') {
-            steps {
-                echo 'Running unit tests with JUnit'
-                echo 'Running integration tests with Selenium'
-            }
-             post {
-                success {
-                    sendEmail('Build Successful')
-                }
-                failure {
-                    sendEmail('Build Failed')
-                }
-            }
+      }
+      post {
+        failure {
+          sendEmail('Build Fail')
         }
-
-        stage('Code Analysis') {
-            steps {
-                echo 'Performing code analysis with Jenkins Plugins'
-            }
-             post {
-                success {
-                    sendEmail('Build Successful')
-                }
-                failure {
-                    sendEmail('Build Failed')
-                }
-            }
-        }
-
-        stage('Security Scan') {
-            steps {
-                echo 'Performing security scan with SonarQube'
-            }
-             post {
-                success {
-                    sendEmail('Build Successful')
-                }
-                failure {
-                    sendEmail('Build Failed')
-                }
-            }
-        }
-
-        stage('Deploy to Staging') {
-            steps {
-                echo 'Deploying to staging server (e.g., AWS EC2 instance)'
-            }
-             post {
-                success {
-                    sendEmail('Build Successful')
-                }
-                failure {
-                    sendEmail('Build Failed')
-                }
-            }
-        }
-
-        stage('Integration Tests on Staging') {
-            steps {
-                echo 'Running integration tests on staging environment'
-            }
-             post {
-                success {
-                    sendEmail('Build Successful')
-                }
-                failure {
-                    sendEmail('Build Failed')
-                }
-            }
-        }
-
-        stage('Deploy to Production') {
-            steps {
-                echo 'Deploying to production server (e.g., AWS EC2 instance)'
-            }
-             post {
-                success {
-                    sendEmail('Build Successful')
-                }
-                failure {
-                    sendEmail('Build Failed')
-                }
-            }
-        }
+      }
     }
+
+    stage('Code Interpretation') {
+      steps {
+        script {
+          echo 'Code analysis using the Jenkins Plugins'
+          sendEmail('Build Successful')
+        }
+      }
+      post {
+        failure {
+          sendEmail('Build Fail')
+        }
+      }
+    }
+
+    stage('Security Scan') {
+      steps {
+        script {
+          echo 'Conducting a security audit with SonarQube'
+          sendEmail('Build Successful')
+        }
+      }
+      post {
+        failure {
+          sendEmail('Build Failed')
+        }
+      }
+    }
+
+    stage('Implement to Staging') {
+      steps {
+        script {
+          echo 'Deploy to staging server'
+          sendEmail('Build Successful')
+        }
+      }
+      post {
+        failure {
+          sendEmail('Build Failed')
+        }
+      }
+    }
+
+    stage('Testing Integration for Staging') {
+      steps {
+        script {
+          echo 'executing integration tests in a staging setting'
+          sendEmail('Build Successful')
+        }
+      }
+      post {
+        failure {
+          sendEmail('Build Fail')
+        }
+      }
+    }
+
+    stage('Deploy to Production') {
+      steps {
+        script {
+          echo 'Deploy to production server'
+          sendEmail('Build Successful')
+        }
+      }
+      post {
+        failure {
+          sendEmail('Build Fail')
+        }
+      }
+    }
+  }
 }
 
-    def sendEmail(String status) {
-    mail body: "Pipeline Stage: ${env.STAGE_NAME}\nStatus: ${status}",
-             subject: "Pipeline Stage: ${env.STAGE_NAME} - ${status}",
-             to: "nssuryasubramanya@gmail.com"
+def sendEmail(String status) {
+  mail body: "Pipeline Stage: ${env.STAGE_NAME}\\nStatus: ${status}",
+       subject: "Pipeline Stage: ${env.STAGE_NAME} - ${status}",
+       to: "nssuryasubramanya@gmail.com"
 }
